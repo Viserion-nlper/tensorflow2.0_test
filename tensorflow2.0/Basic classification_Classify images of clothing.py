@@ -158,6 +158,7 @@ print(img.shape)  #(1, 28, 28)
 pre_label_single = probability_model.predict(img)
 print(pre_label_single)
 
+#
 
 # plot_value_array(1, pre_label_single[0], test_labels)
 # _ = plt.xticks(range(10), class_names, rotation=45)
