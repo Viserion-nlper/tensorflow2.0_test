@@ -19,12 +19,14 @@ train_data, validation_data, test_data = tfds.load(
     name="imdb_reviews",
     split=('train[:60%]', 'train[60%:]', 'test'),
     as_supervised=True)
-
+# print("train_data",train_data)
+#
+# print("validation_data",validation_data)
 
 train_examples_batch, train_labels_batch = next(iter(train_data.batch(10)))
-# print(train_examples_batch)
-#
-# print(train_labels_batch)
+print(train_examples_batch)
+
+print(train_labels_batch)
 # 建立模型
 # 神经网络由堆叠的层构建
 #如何表示文本？
@@ -43,8 +45,12 @@ train_examples_batch, train_labels_batch = next(iter(train_data.batch(10)))
 #使用TensorflowHub进行词嵌入
 embedding = "https://hub.tensorflow.google.cn/google/tf2-preview/gnews-swivel-20dim/1"
 hub_layer = hub.KerasLayer(embedding,input_shape=[],trainable=True,dtype=tf.string)
-print(hub_layer(train_examples_batch[:3]))
-
+# print(hub_layer(train_examples_batch[:3]))
+embedding = "https://hub.tensorflow.google.cn/google/tf2-preview/gnews-swivel-20dim/1"
+hub_layer = hub.KerasLayer(embedding, input_shape=[],
+                           dtype=tf.string, trainable=True)
+hub_layer(train_examples_batch[:3])
+#
 #构建完整模型
 model = tf.keras.Sequential()
 model.add(hub_layer)
@@ -57,6 +63,7 @@ model.summary()
 # 在研究回归问题时  可以选择使用均方误差MSE来衡量
 
 model.compile(optimizer="adam",loss="binary_crossentropy",metrics=["accuracy"])
+b = train_data.shuffle(10000).batch(512)
 
 history = model.fit(train_data.shuffle(10000).batch(512),
           epochs=5,
@@ -69,3 +76,9 @@ for name,value in zip(model.metrics_names, results):
     print('%s: %.3f'% (name, value))
 # loss: 0.500
 # acc: 0.762
+
+# predict_value = model.predict(train_data.batch(512))
+# print("predict_value",predict_value.shape)
+
+#疑  在fit过程中 input  train_data  label包含在其中 model如何分辨data和label？
+#疑  在文本进行预测的时候 如何像图片一样处理input.shape?
